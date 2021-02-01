@@ -1,4 +1,4 @@
-package com.rogue.game;
+package com.game.game;
 
 import java.util.ArrayList;
 import java.util.List;

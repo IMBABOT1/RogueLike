@@ -1,5 +1,4 @@
-package com.rogue.game;
-
+package com.game.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -12,9 +11,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 
-/**
- * Created by FlameXander on 09.01.2018.
- */
+
 
 public class Assets {
     private static final Assets ourInstance = new Assets();

@@ -1,4 +1,4 @@
-package com.rogue.game;
+package com.game.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

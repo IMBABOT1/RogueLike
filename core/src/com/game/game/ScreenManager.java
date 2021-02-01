@@ -1,4 +1,4 @@
-package com.rogue.game;
+package com.game.game;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-/**
- * Created by FlameXander on 09.01.2018.
- */
 
 public class ScreenManager {
     public enum ScreenType {

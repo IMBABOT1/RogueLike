@@ -1,4 +1,4 @@
-package com.rogue.game;
+package com.game.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
