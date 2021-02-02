@@ -19,19 +19,25 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GameScreen implements Screen {
     private SpriteBatch batch;
+
+    public Map getMap() {
+        return map;
+    }
+
     private Map map;
     private Hero hero;
     private BitmapFont font;
     private Trash[] trashes;
     private PowerUpsEmitter powerUpsEmitter;
     private BulletEmitter bulletEmitter;
-    private int counter;
     private Sound soundTakeMoney;
     private Music mainTheme;
     private ShapeRenderer shapeRenderer;
-    private Monster monster;
+    private MonsterEmitter monsterEmitter;
     private final static boolean DEBUG_MODE = true;
     private Camera camera;
+    private Camera screenCamera;
+    private TrashEmitter trashEmitter;
 
     public GameScreen(SpriteBatch batch) {
         this.batch = batch;
@@ -48,19 +54,28 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         TextureAtlas atlas = Assets.getInstance().getAtlas();
-        camera = new OrthographicCamera(1280, 720);
-        map = new Map(atlas.findRegion("star16"), atlas.findRegion("ground"));
+        Gdx.input.setInputProcessor(null);
+        camera = new OrthographicCamera(ScreenManager.VIEW_WIDTH, ScreenManager.VIEW_HEIGHT);
+        screenCamera = new OrthographicCamera(ScreenManager.VIEW_WIDTH, ScreenManager.VIEW_HEIGHT);
+        screenCamera.position.set(ScreenManager.VIEW_WIDTH /2, ScreenManager.VIEW_HEIGHT /2, 0);
+        screenCamera.update();
+        map = new Map(atlas.findRegion("star16"), atlas.findRegion("ground"), 320);
         hero = new Hero(this, map, atlas.findRegion("runner"), 300, 300);
         map.generateMap();
-        monster = new Monster(this, map, atlas.findRegion("runner"), 700, 500);
+        monsterEmitter = new MonsterEmitter(this, atlas.findRegion("runner"), 20, 10);
+        for (int i = 0; i < 15 ; i++) {
+            monsterEmitter.createMonster(MathUtils.random(0, map.getEndOfWorldX()), 500);
+        }
+        trashEmitter = new TrashEmitter(this, atlas.findRegion("asteroid64"), 20);
         trashes = new Trash[20];
         TextureRegion asteroidTexture = atlas.findRegion("asteroid64");
         for (int i = 0; i < trashes.length; i++) {
             trashes[i] = new Trash(asteroidTexture);
-            trashes[i].prepare();
+            trashes[i].prepare(i);
         }
-        mainTheme = Gdx.audio.newMusic(Gdx.files.internal("Jumping bat.wav"));
-        mainTheme.play();
+       // mainTheme = Gdx.audio.newMusic(Gdx.files.internal("Jumping bat.wav"));
+       // mainTheme.setLooping(true);
+       // mainTheme.play();
 //        soundTakeMoney = Gdx.audio.newSound(Gdx.files.internal("takeMoney.wav"));
         powerUpsEmitter = new PowerUpsEmitter(atlas.findRegion("money"));
         bulletEmitter = new BulletEmitter(atlas.findRegion("bullet48"), 0);
@@ -80,12 +95,14 @@ public class GameScreen implements Screen {
         batch.begin();
         map.render(batch);
         hero.render(batch);
-        monster.render(batch);
+        monsterEmitter.render(batch);
         for (int i = 0; i < trashes.length; i++) {
             trashes[i].render(batch);
         }
         powerUpsEmitter.render(batch);
         bulletEmitter.render(batch);
+        trashEmitter.render(batch);
+        batch.setProjectionMatrix(screenCamera.combined);
         hero.renderGUI(batch, font);
         batch.end();
         if (DEBUG_MODE) {
@@ -97,26 +114,22 @@ public class GameScreen implements Screen {
     }
 
     public void update(float dt) {
-        counter++;
-        if (counter % 50 == 0) {
-            powerUpsEmitter.tryToCreatePowerUp(MathUtils.random(0, 1280), MathUtils.random(200, 250), 1.0f);
-        }
         map.update(dt);
         hero.update(dt);
-        if (hero.hitArea.x > 640) {
-            camera.position.set(hero.getCenterX(), hero.getCenterY(), 0);
-        }
-        if (hero.hitArea.x < 640){
-            hero.hitArea.x = 640;
-        }
+        updateHeroCamera();
         camera.update();
-        monster.update(dt);
+        monsterEmitter.update(dt);
         bulletEmitter.update(dt);
         powerUpsEmitter.update(dt);
-        for (int i = 0; i < trashes.length; i++) {
-            trashes[i].update(dt);
-            if (hero.getHitArea().overlaps(trashes[i].getHitArea())) {
-                trashes[i].prepare();
+        trashEmitter.update(dt);
+        checkCollisions();
+        bulletEmitter.checkPool();
+    }
+
+    private void checkCollisions(){
+        for (int i = 0; i < trashEmitter.getTrash().length; i++) {
+            if (hero.getHitArea().overlaps(trashEmitter.getTrash()[i].getHitArea())) {
+                trashEmitter.recreateTrash(i);
                 hero.takeDamage(5);
             }
         }
@@ -129,11 +142,48 @@ public class GameScreen implements Screen {
             }
         }
         for (int i = 0; i < bulletEmitter.getActiveList().size(); i++) {
-            if (!map.checkSpaceIsEmpty(bulletEmitter.getActiveList().get(i).getPosition().x, bulletEmitter.getActiveList().get(i).getPosition().y)) {
-                bulletEmitter.getActiveList().get(i).deactivate();
+            Bullet b = bulletEmitter.getActiveList().get(i);
+            if (!map.checkSpaceIsEmpty(b.getPosition().x, b.getPosition().y)) {
+                b.deactivate();
+                continue;
+            }
+            if (b.isPlayersBullet()){
+                for (int j = 0; j <monsterEmitter.getMonsters().length ; j++) {
+                    Monster m = monsterEmitter.getMonsters()[j];
+                    if (m.isActive()){
+                        if (m.getHitArea().contains(b.getPosition())){
+                            b.deactivate();
+                            if (m.takeDamage(25)) {
+                                powerUpsEmitter.tryToCreatePowerUp(m.getCenterX(), m.getCenterY(), 0.5f);
+                                hero.addScore(100);
+                            }
+                            break;
+                        }
+
+                    }
+                }
+            }
+            if (!b.isPlayersBullet()){
+                if (hero.getHitArea().contains(b.getPosition())){
+                    b.deactivate();
+                    hero.takeDamage(10);
+                    break;
+                }
             }
         }
-        bulletEmitter.checkPool();
+    }
+
+    public void updateHeroCamera(){
+        camera.position.set(hero.getCenterX(), hero.getCenterY(), 0);
+        if (camera.position.y < ScreenManager.VIEW_HEIGHT / 2){
+            camera.position.y = ScreenManager.VIEW_HEIGHT / 2;
+        }
+        if (camera.position.x < ScreenManager.VIEW_WIDTH / 2){
+            camera.position.x = ScreenManager.VIEW_WIDTH / 2;
+        }
+        if (camera.position.x > map.getEndOfWorldX() - ScreenManager.VIEW_WIDTH / 2){
+            camera.position.x = map.getEndOfWorldX() - ScreenManager.VIEW_WIDTH / 2;
+        }
     }
 
     @Override

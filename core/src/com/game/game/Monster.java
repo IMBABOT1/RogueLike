@@ -10,8 +10,15 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Monster extends BaseUnit {
+    public boolean isActive() {
+        return isActive;
+    }
+
+    private boolean isActive;
+
     public Monster(GameScreen gameScreen, Map map, TextureRegion original, float x, float y) {
-        super(gameScreen, map, original, 100, 120.0f, 1.0f, 35, x, y, 100, 100);
+        super(gameScreen, map, original, 100, 120.0f, 1.0f,  x, y, 100, 100);
+        isActive = false;
     }
 
     @Override
@@ -31,6 +38,21 @@ public class Monster extends BaseUnit {
                 jump();
             }
         }
+    }
+
+    @Override
+    public void destroy() {
+        deactivate();
+    }
+
+    public void deactivate(){
+        isActive = false;
+    }
+
+    public void activate(float x, float y){
+        isActive = true;
+        hitArea.setPosition(x, y);
+        hp = maxHp;
     }
 
     @Override

@@ -11,14 +11,28 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Hero extends BaseUnit {
     private int coins;
+    private int lifes;
+    private int score;
 
     public void addCoins(int amount) {
         coins += amount;
     }
 
     public Hero(GameScreen gameScreen, Map map, TextureRegion original, float x, float y) {
-        super(gameScreen, map, original, 100, 360.0f, 0.4f, 35, x, y, 100, 100);
+        super(gameScreen, map, original, 100, 360.0f, 0.4f, x, y, 100, 100);
         this.coins = 0;
+        this.lifes = 5;
+        this.score = 0;
+    }
+
+    public void addScore(int amount){
+        score += amount;
+    }
+
+    @Override
+    public void destroy() {
+        lifes--;
+        hp = maxHp;
     }
 
     @Override
@@ -39,6 +53,6 @@ public class Hero extends BaseUnit {
     }
 
     public void renderGUI(SpriteBatch batch, BitmapFont font) {
-        font.draw(batch, "HP: " + hp + " / " + maxHp + "\nCoins: " + coins, 20, 700);
+        font.draw(batch, "Score " + score +  "\nHP: " + hp + " / " + maxHp + " x" + lifes + "\nCoins: " + coins, 20, 700);
     }
 }

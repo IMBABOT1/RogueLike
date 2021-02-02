@@ -1,4 +1,5 @@
 package com.game.game;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -10,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-
 
 
 public class Assets {
@@ -54,7 +54,6 @@ public class Assets {
                 assetManager.load("zorque48.ttf", BitmapFont.class, fontParameter48);
                 assetManager.load("background.png", Texture.class);
                 assetManager.load("mainPack.pack", TextureAtlas.class);
-//                assetManager.load("menuBtn.png", Texture.class);
                 break;
             case GAME:
                 FreetypeFontLoader.FreeTypeFontLoaderParameter fontParameter24 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -70,7 +69,9 @@ public class Assets {
                 assetManager.load("mainPack.pack", TextureAtlas.class);
                 break;
         }
-        assetManager.finishLoading();
+    }
+
+    public void makeLinks() {
         atlas = assetManager.get("mainPack.pack", TextureAtlas.class);
     }
 

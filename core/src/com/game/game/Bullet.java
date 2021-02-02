@@ -7,6 +7,7 @@ public class Bullet implements Poolable {
     private Vector2 position;
     private Vector2 velocity;
     private boolean active;
+    private float time;
 
     public boolean isPlayersBullet() {
         return isPlayersBullet;
@@ -35,11 +36,13 @@ public class Bullet implements Poolable {
         position.set(x, y);
         velocity.set(vx, vy);
         active = true;
+        time = 0.0f;
     }
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
-        if (position.x > 1280 || position.x < 0 || position.y < 0 || position.y > 720) {
+        time += dt;
+        if (time > 1f){
             deactivate();
         }
     }

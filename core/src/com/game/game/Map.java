@@ -39,16 +39,25 @@ public class Map {
 
     private static final boolean SNOW_ENABLED = false;
     private static final int SNOW_FLAKES_COUNT = 100;
+    private static final int CELL_SIZE_PX = 40;
 
     private TextureRegion textureSnow;
     private TextureRegion groundTexture;
     private char[][] data;
     private Snow[] snow;
+    private int length;
+    private int endOfWorldX;
 
-    public Map(TextureRegion textureSnow, TextureRegion groundTexture) {
+    public int getEndOfWorldX(){
+        return endOfWorldX;
+    }
+
+    public Map(TextureRegion textureSnow, TextureRegion groundTexture, int length) {
+        this.length = length;
         this.groundTexture = groundTexture;
         this.textureSnow = textureSnow;
-        data = new char[1000][18];
+        this.data = new char[length][18];
+        this.endOfWorldX = length * CELL_SIZE_PX;
         snow = new Snow[SNOW_FLAKES_COUNT];
         for (int i = 0; i < snow.length; i++) {
             snow[i] = new Snow();
@@ -60,7 +69,7 @@ public class Map {
     }
 
     public void fillGroundPart(int x1, int x2, int height) {
-        if (x2 > 999) x2 = 999;
+        if (x2 > length-1) x2 = length - 1;
         for (int i = x1; i <= x2; i++) {
             for (int j = 0; j < height; j++) {
                 data[i][j] = SYMB_GRASS;
@@ -73,29 +82,22 @@ public class Map {
         int position = 0;
         fillGroundPart(0, 3, height);
         position = 4;
-        while (position < 32) {
+        while (position < length) {
             int len = MathUtils.random(3, 6);
             height += MathUtils.random(-3, 3);
             if (height < 1) height = 1;
-            if (height > 6) height = 6;
+            if (height > 12) height = 12;
             fillGroundPart(position, position + len - 1, height);
             position += len;
-        }
-        while (position >= 32){
-            int len = 1;
-            height = 1;
-            fillGroundPart(position, position + len -1, 1);{
-                position += len;
-            }
         }
         data[5][7] = SYMB_GRASS;
     }
 
     public void render(SpriteBatch batch) {
-        for (int i = 0; i < 999; i++) {
+        for (int i = 0; i < length; i++) {
             for (int j = 0; j < 18; j++) {
                 if (data[i][j] == SYMB_GRASS) {
-                    batch.draw(groundTexture, i * 40, j * 40);
+                    batch.draw(groundTexture, i * CELL_SIZE_PX, j * CELL_SIZE_PX);
                 }
             }
         }
@@ -113,9 +115,9 @@ public class Map {
     }
 
     public boolean checkSpaceIsEmpty(float x, float y) {
-        if (x < 0 || x > 100000) return false;
-        int cellX = (int) (x / 40);
-        int cellY = (int) (y / 40);
+        if (x < 0 || x > endOfWorldX) return false;
+        int cellX = (int) (x / CELL_SIZE_PX);
+        int cellY = (int) (y / CELL_SIZE_PX);
         return isCellEmpty(cellX, cellY);
     }
 

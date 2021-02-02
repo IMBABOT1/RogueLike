@@ -1,11 +1,12 @@
 package com.game.game;
-
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 
 
 public class ScreenManager {
@@ -17,6 +18,11 @@ public class ScreenManager {
     private Viewport viewport;
     private GameScreen gameScreen;
     private MenuScreen menuScreen;
+    private LoadingScreen loadingScreen;
+    private Screen targetScreen;
+
+    public static final int VIEW_WIDTH = 1280;
+    public static final int VIEW_HEIGHT = 720;
 
     public Viewport getViewport() {
         return viewport;
@@ -26,7 +32,8 @@ public class ScreenManager {
         this.rpgGame = rpgGame;
         this.gameScreen = new GameScreen(batch);
         this.menuScreen = new MenuScreen(batch);
-        this.viewport = new FitViewport(1280, 720);
+        this.loadingScreen = new LoadingScreen(batch);
+        this.viewport = new FitViewport(VIEW_WIDTH, VIEW_HEIGHT);
         this.viewport.apply();
     }
 
@@ -52,14 +59,20 @@ public class ScreenManager {
         }
         switch (type) {
             case MENU:
+                rpgGame.setScreen(loadingScreen);
+                targetScreen = menuScreen;
                 Assets.getInstance().loadAssets(ScreenType.MENU);
-                rpgGame.setScreen(menuScreen);
                 break;
             case GAME:
+                rpgGame.setScreen(loadingScreen);
+                targetScreen = gameScreen;
                 Assets.getInstance().loadAssets(ScreenType.GAME);
-                rpgGame.setScreen(gameScreen);
                 break;
         }
+    }
+
+    public void goToTarget() {
+        rpgGame.setScreen(targetScreen);
     }
 
     public void dispose() {

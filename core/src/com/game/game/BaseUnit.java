@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public class BaseUnit {
+public abstract class BaseUnit {
     protected GameScreen gameScreen;
     protected Map map;
     protected TextureRegion[] regions;
@@ -41,7 +41,7 @@ public class BaseUnit {
         return hitArea;
     }
 
-    public BaseUnit(GameScreen gameScreen, Map map, TextureRegion original, int maxHp, float speed, float timeBetweenFire, float radius, float x, float y, int width, int height) {
+    public BaseUnit(GameScreen gameScreen, Map map, TextureRegion original, int maxHp, float speed, float timeBetweenFire, float x, float y, int width, int height) {
         this.gameScreen = gameScreen;
         this.map = map;
         this.velocity = new Vector2(0, 0);
@@ -111,9 +111,16 @@ public class BaseUnit {
         hitArea.y++;
     }
 
-    public void takeDamage(int dmg) {
+    public boolean takeDamage(int dmg) {
         hp -= dmg;
+        if (hp < 0){
+            destroy();
+            return true;
+        }
+        return false;
     }
+
+    public abstract void destroy();
 
     public boolean checkCollision() {
         final int parts = 4;
