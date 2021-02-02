@@ -44,7 +44,6 @@ public class Map {
     private TextureRegion groundTexture;
     private char[][] data;
     private Snow[] snow;
-    private GameScreen gameScreen;
 
     public Map(TextureRegion textureSnow, TextureRegion groundTexture) {
         this.groundTexture = groundTexture;

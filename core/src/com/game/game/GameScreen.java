@@ -50,8 +50,8 @@ public class GameScreen implements Screen {
         TextureAtlas atlas = Assets.getInstance().getAtlas();
         camera = new OrthographicCamera(1280, 720);
         map = new Map(atlas.findRegion("star16"), atlas.findRegion("ground"));
-        map.generateMap();
         hero = new Hero(this, map, atlas.findRegion("runner"), 300, 300);
+        map.generateMap();
         monster = new Monster(this, map, atlas.findRegion("runner"), 700, 500);
         trashes = new Trash[20];
         TextureRegion asteroidTexture = atlas.findRegion("asteroid64");
