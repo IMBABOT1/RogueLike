@@ -201,7 +201,7 @@ public class GameScreen  implements Screen {
                 hero.fire(dt, true);
                 return true;
             }
-        });
+        })
     }
 
     private void checkCollisions(){
