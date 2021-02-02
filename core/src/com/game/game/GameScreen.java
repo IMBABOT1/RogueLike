@@ -204,7 +204,7 @@ public class GameScreen  implements Screen {
         });
     }
 
-    private void checkCollisions()
+    private void checkCollisions(){
         for (int i = 0; i < trashEmitter.getTrash().length; i++) {
             if (hero.getHitArea().overlaps(trashEmitter.getTrash()[i].getHitArea())) {
                 trashEmitter.recreateTrash(i);
