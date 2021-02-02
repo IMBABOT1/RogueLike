@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class MenuScreen implements Screen {
     private Texture backgroundTexture;
-    private BitmapFont font48;
+    private BitmapFont font24;
     private SpriteBatch batch;
 
     private Stage stage;
@@ -29,7 +29,7 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         backgroundTexture = Assets.getInstance().getAssetManager().get("background.png", Texture.class);
-        font48 = Assets.getInstance().getAssetManager().get("zorque48.ttf", BitmapFont.class);
+        font24 = Assets.getInstance().getAssetManager().get("zorque48.ttf", BitmapFont.class);
         createGUI();
     }
 
@@ -47,11 +47,11 @@ public class MenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         skin = new Skin();
         skin.addRegions(Assets.getInstance().getAtlas());
-        skin.add("font48", font48);
+        skin.add("font48", font24);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.up = skin.getDrawable("menuBtn");
-        textButtonStyle.font = font48;
+        textButtonStyle.font = font24;
         skin.add("simpleBtn", textButtonStyle);
 
         Button btnNewGame = new TextButton("Start New Game", skin, "simpleBtn");
@@ -66,6 +66,7 @@ public class MenuScreen implements Screen {
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                event.isCapture();
                 ScreenManager.getInstance().switchScreen(ScreenManager.ScreenType.GAME);
             }
         });
