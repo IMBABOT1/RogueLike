@@ -108,7 +108,6 @@ public class GameScreen implements Screen {
         }
         if (hero.hitArea.x < 640){
             hero.hitArea.x = 640;
-
         }
         camera.update();
         monster.update(dt);

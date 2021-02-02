@@ -44,11 +44,12 @@ public class Map {
     private TextureRegion groundTexture;
     private char[][] data;
     private Snow[] snow;
+    private GameScreen gameScreen;
 
     public Map(TextureRegion textureSnow, TextureRegion groundTexture) {
         this.groundTexture = groundTexture;
         this.textureSnow = textureSnow;
-        data = new char[32][18];
+        data = new char[1000][18];
         snow = new Snow[SNOW_FLAKES_COUNT];
         for (int i = 0; i < snow.length; i++) {
             snow[i] = new Snow();
@@ -60,7 +61,7 @@ public class Map {
     }
 
     public void fillGroundPart(int x1, int x2, int height) {
-        if (x2 > 31) x2 = 31;
+        if (x2 > 999) x2 = 999;
         for (int i = x1; i <= x2; i++) {
             for (int j = 0; j < height; j++) {
                 data[i][j] = SYMB_GRASS;
@@ -81,11 +82,18 @@ public class Map {
             fillGroundPart(position, position + len - 1, height);
             position += len;
         }
+        while (position >= 32){
+            int len = 1;
+            height = 1;
+            fillGroundPart(position, position + len -1, 1);{
+                position += len;
+            }
+        }
         data[5][7] = SYMB_GRASS;
     }
 
     public void render(SpriteBatch batch) {
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < 999; i++) {
             for (int j = 0; j < 18; j++) {
                 if (data[i][j] == SYMB_GRASS) {
                     batch.draw(groundTexture, i * 40, j * 40);
@@ -106,7 +114,7 @@ public class Map {
     }
 
     public boolean checkSpaceIsEmpty(float x, float y) {
-        if (x < 0 || x > 1280) return false;
+        if (x < 0 || x > 100000) return false;
         int cellX = (int) (x / 40);
         int cellY = (int) (y / 40);
         return isCellEmpty(cellX, cellY);
