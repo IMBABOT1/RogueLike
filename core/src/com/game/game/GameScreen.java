@@ -103,7 +103,13 @@ public class GameScreen implements Screen {
         }
         map.update(dt);
         hero.update(dt);
-        camera.position.set(hero.getCenterX(), hero.getCenterY(), 0);
+        if (hero.hitArea.x > 640) {
+            camera.position.set(hero.getCenterX(), hero.getCenterY(), 0);
+        }
+        if (hero.hitArea.x < 640){
+            hero.hitArea.x = 640;
+
+        }
         camera.update();
         monster.update(dt);
         bulletEmitter.update(dt);
