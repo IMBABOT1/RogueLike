@@ -1,24 +1,21 @@
 package com.game.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Vector2;
+import com.game.game.Screens.GameScreen;
+
 
 public class Monster extends BaseUnit {
+    private boolean active;
+
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
-    private boolean isActive;
-
-    public Monster(GameScreen gameScreen, Map map, TextureRegion original, float x, float y) {
-        super(gameScreen, map, original, 100, 120.0f, 1.0f,  x, y, 100, 100);
-        isActive = false;
+    public Monster(GameScreen gameScreen, Map map, float x, float y) {
+        super(gameScreen, map, 100, 120.0f, 1.8f, x, y, 100, 100);
+        this.type = Type.Bear;
+        this.active = false;
+        this.afterLoad(gameScreen);
     }
 
     @Override
@@ -40,25 +37,25 @@ public class Monster extends BaseUnit {
         }
     }
 
-    @Override
-    public void destroy() {
-        deactivate();
+    public void deactivate() {
+        active = false;
     }
 
-    public void deactivate(){
-        isActive = false;
-    }
-
-    public void activate(float x, float y){
-        isActive = true;
+    public void activate(float x, float y) {
+        active = true;
         hitArea.setPosition(x, y);
         hp = maxHp;
     }
 
     @Override
+    public void destroy() {
+        deactivate();
+    }
+
+    @Override
     public void render(SpriteBatch batch) {
-        batch.setColor(Color.RED);
+//        batch.setColor(Color.RED);
         super.render(batch);
-        batch.setColor(Color.WHITE);
+//        batch.setColor(Color.WHITE);
     }
 }

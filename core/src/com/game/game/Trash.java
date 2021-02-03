@@ -9,16 +9,16 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Trash {
-    public Vector2 getPosition() {
-        return position;
-    }
-
     private Vector2 position;
     private Vector2 velocity;
     private TextureRegion texture;
     private Rectangle hitArea;
     private float scale;
     private float angle;
+
+    public Vector2 getPosition() {
+        return position;
+    }
 
     public Rectangle getHitArea() {
         return hitArea;
@@ -47,10 +47,8 @@ public class Trash {
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
-        if (position.y < -100) {
-            hitArea.setPosition(position);
-            hitArea.x += 2 * scale;
-            hitArea.y += 2 * scale;
-        }
+        hitArea.setPosition(position);
+        hitArea.x += 2 * scale;
+        hitArea.y += 2 * scale;
     }
 }

@@ -1,18 +1,32 @@
 package com.game.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.game.game.Screens.GameScreen;
 
-public abstract class BaseUnit {
-    protected GameScreen gameScreen;
+
+import java.io.Serializable;
+
+public abstract class BaseUnit implements Serializable {
+    public enum Type {
+        Knight("knight"), Bear("bear");
+
+        private String texture;
+
+        public String getTexture() {
+            return texture;
+        }
+
+        Type(String texture) {
+            this.texture = texture;
+        }
+    }
+
+    protected transient GameScreen gameScreen;
     protected Map map;
-    protected TextureRegion[] regions;
+    protected transient TextureRegion[] regions;
     protected Vector2 velocity;
     protected float animationTime;
     protected boolean right;
@@ -24,6 +38,8 @@ public abstract class BaseUnit {
     protected float firePressTimer;
     protected float timeBetweenFire;
     protected float speed;
+    protected float reddish;
+    protected Type type;
 
     public float getCenterX() {
         return hitArea.x + hitArea.width / 2;
@@ -41,19 +57,25 @@ public abstract class BaseUnit {
         return hitArea;
     }
 
-    public BaseUnit(GameScreen gameScreen, Map map, TextureRegion original, int maxHp, float speed, float timeBetweenFire, float x, float y, int width, int height) {
+    public BaseUnit(GameScreen gameScreen, Map map, int maxHp, float speed, float timeBetweenFire, float x, float y, int width, int height) {
         this.gameScreen = gameScreen;
         this.map = map;
         this.velocity = new Vector2(0, 0);
         this.width = width;
         this.height = height;
-        this.regions = new TextureRegion(original).split(width, height)[0];
         this.right = true;
         this.maxHp = maxHp;
         this.speed = speed;
         this.hp = this.maxHp;
         this.hitArea = new Rectangle(x, y, width / 3, height / 3 * 2);
         this.timeBetweenFire = timeBetweenFire;
+        this.reddish = 0.0f;
+    }
+
+    public void afterLoad(GameScreen gameScreen) {
+        TextureRegion tr = Assets.getInstance().getAtlas().findRegion(type.getTexture());
+        this.regions = tr.split(width, height)[0];
+        this.gameScreen = gameScreen;
     }
 
     public void update(float dt) {
@@ -81,6 +103,16 @@ public abstract class BaseUnit {
         } else {
             animationTime = 0;
         }
+        if (reddish > 0.0f) {
+            reddish -= dt / 2;
+            if (reddish < 0.0f) {
+                reddish = 0.0f;
+            }
+        }
+    }
+
+    public void setBlock() {
+        map.blockCell(this);
     }
 
     public void moveLeft() {
@@ -113,7 +145,11 @@ public abstract class BaseUnit {
 
     public boolean takeDamage(int dmg) {
         hp -= dmg;
-        if (hp < 0){
+        reddish += 0.5f;
+        if (reddish > 1.0f) {
+            reddish = 1.0f;
+        }
+        if (hp <= 0) {
             destroy();
             return true;
         }
@@ -127,7 +163,7 @@ public abstract class BaseUnit {
         float dx = hitArea.width / parts;
         float dy = hitArea.height / parts;
         for (int i = 0; i <= parts; i++) {
-            if (!map.checkSpaceIsEmpty(hitArea.x + i * dx, hitArea.y) || !map.checkSpaceIsEmpty(hitArea.x + i * dx, hitArea.y + hitArea.height) || !map.checkSpaceIsEmpty(hitArea.x, hitArea.y + i * dy) || !map.checkSpaceIsEmpty(hitArea.x +  hitArea.width, hitArea.y + i * dy)) {
+            if (!map.checkSpaceIsEmpty(this,hitArea.x + i * dx, hitArea.y) || !map.checkSpaceIsEmpty(this,hitArea.x + i * dx, hitArea.y + hitArea.height) || !map.checkSpaceIsEmpty(this,hitArea.x, hitArea.y + i * dy) || !map.checkSpaceIsEmpty(this,hitArea.x + hitArea.width, hitArea.y + i * dy)) {
                 return true;
             }
         }
@@ -142,7 +178,9 @@ public abstract class BaseUnit {
         if (right && regions[frameIndex].isFlipX()) {
             regions[frameIndex].flip(true, false);
         }
+        batch.setColor(1.0f, 1.0f - reddish, 1.0f - reddish, 1.0f);
         batch.draw(regions[frameIndex], hitArea.x - (width - hitArea.width) / 2, hitArea.y - (height - hitArea.height) / 2);
+        batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public int getCurrentFrame() {

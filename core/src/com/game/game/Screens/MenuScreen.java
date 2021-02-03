@@ -1,4 +1,5 @@
-package com.game.game;
+package com.game.game.Screens;
+
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,12 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
+import com.game.game.Assets;
 
 
 public class MenuScreen implements Screen {
     private Texture backgroundTexture;
-    private BitmapFont font24;
+    private BitmapFont font48;
     private SpriteBatch batch;
 
     private Stage stage;
@@ -29,7 +30,7 @@ public class MenuScreen implements Screen {
     @Override
     public void show() {
         backgroundTexture = Assets.getInstance().getAssetManager().get("background.png", Texture.class);
-        font24 = Assets.getInstance().getAssetManager().get("zorque48.ttf", BitmapFont.class);
+        font48 = Assets.getInstance().getAssetManager().get("zorque48.ttf", BitmapFont.class);
         createGUI();
     }
 
@@ -47,11 +48,11 @@ public class MenuScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         skin = new Skin();
         skin.addRegions(Assets.getInstance().getAtlas());
-        skin.add("font48", font24);
+        skin.add("font48", font48);
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.up = skin.getDrawable("menuBtn");
-        textButtonStyle.font = font24;
+        textButtonStyle.font = font48;
         skin.add("simpleBtn", textButtonStyle);
 
         Button btnNewGame = new TextButton("Start New Game", skin, "simpleBtn");
@@ -66,7 +67,6 @@ public class MenuScreen implements Screen {
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                event.isCapture();
                 ScreenManager.getInstance().switchScreen(ScreenManager.ScreenType.GAME);
             }
         });

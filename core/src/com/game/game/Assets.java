@@ -1,6 +1,5 @@
 package com.game.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -11,7 +10,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.game.game.Screens.ScreenManager;
+;
 
+/**
+ * Created by FlameXander on 09.01.2018.
+ */
 
 public class Assets {
     private static final Assets ourInstance = new Assets();
@@ -36,39 +40,39 @@ public class Assets {
     }
 
     public void loadAssets(ScreenManager.ScreenType type) {
-        FileHandleResolver resolver = new InternalFileHandleResolver();
-        assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
-        assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
-
         switch (type) {
             case MENU:
-                FreetypeFontLoader.FreeTypeFontLoaderParameter fontParameter48 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-                fontParameter48.fontFileName = "zorque.ttf";
-                fontParameter48.fontParameters.size = 48;
-                fontParameter48.fontParameters.color = Color.WHITE;
-                fontParameter48.fontParameters.borderWidth = 1;
-                fontParameter48.fontParameters.borderColor = Color.BLACK;
-                fontParameter48.fontParameters.shadowOffsetX = 1;
-                fontParameter48.fontParameters.shadowOffsetY = 1;
-                fontParameter48.fontParameters.shadowColor = Color.BLACK;
-                assetManager.load("zorque48.ttf", BitmapFont.class, fontParameter48);
+                createStandardFont(48);
                 assetManager.load("background.png", Texture.class);
                 assetManager.load("mainPack.pack", TextureAtlas.class);
                 break;
             case GAME:
-                FreetypeFontLoader.FreeTypeFontLoaderParameter fontParameter24 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-                fontParameter24.fontFileName = "zorque.ttf";
-                fontParameter24.fontParameters.size = 24;
-                fontParameter24.fontParameters.color = Color.WHITE;
-                fontParameter24.fontParameters.borderWidth = 1;
-                fontParameter24.fontParameters.borderColor = Color.BLACK;
-                fontParameter24.fontParameters.shadowOffsetX = 3;
-                fontParameter24.fontParameters.shadowOffsetY = 3;
-                fontParameter24.fontParameters.shadowColor = Color.BLACK;
-                assetManager.load("zorque24.ttf", BitmapFont.class, fontParameter24);
+                createStandardFont(24);
+                assetManager.load("mainPack.pack", TextureAtlas.class);
+                break;
+            case SHOP:
+                createStandardFont(32);
+                createStandardFont(48);
+                assetManager.load("shopBg.jpg", Texture.class);
                 assetManager.load("mainPack.pack", TextureAtlas.class);
                 break;
         }
+    }
+
+    public void createStandardFont(int size) {
+        FileHandleResolver resolver = new InternalFileHandleResolver();
+        assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+        assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+        FreetypeFontLoader.FreeTypeFontLoaderParameter fontParameter = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        fontParameter.fontFileName = "zorque.ttf";
+        fontParameter.fontParameters.size = size;
+        fontParameter.fontParameters.color = Color.WHITE;
+        fontParameter.fontParameters.borderWidth = 1;
+        fontParameter.fontParameters.borderColor = Color.BLACK;
+        fontParameter.fontParameters.shadowOffsetX = 1;
+        fontParameter.fontParameters.shadowOffsetY = 1;
+        fontParameter.fontParameters.shadowColor = Color.BLACK;
+        assetManager.load("zorque" + size + ".ttf", BitmapFont.class, fontParameter);
     }
 
     public void makeLinks() {

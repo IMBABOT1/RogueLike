@@ -1,28 +1,32 @@
-package com.game.game;
+package com.game.game.Screens;
+
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
+import com.game.game.Assets;
+import com.game.game.RpgGame;
 
 
 public class ScreenManager {
     public enum ScreenType {
-        MENU, GAME;
+        MENU, GAME, SHOP;
     }
 
     private RpgGame rpgGame;
     private Viewport viewport;
     private GameScreen gameScreen;
     private MenuScreen menuScreen;
+    private ShopScreen shopScreen;
     private LoadingScreen loadingScreen;
     private Screen targetScreen;
 
     public static final int VIEW_WIDTH = 1280;
     public static final int VIEW_HEIGHT = 720;
+
+    public RpgGame getRpgGame() {
+        return rpgGame;
+    }
 
     public Viewport getViewport() {
         return viewport;
@@ -32,6 +36,7 @@ public class ScreenManager {
         this.rpgGame = rpgGame;
         this.gameScreen = new GameScreen(batch);
         this.menuScreen = new MenuScreen(batch);
+        this.shopScreen = new ShopScreen(batch);
         this.loadingScreen = new LoadingScreen(batch);
         this.viewport = new FitViewport(VIEW_WIDTH, VIEW_HEIGHT);
         this.viewport.apply();
@@ -57,22 +62,26 @@ public class ScreenManager {
         if (currentScreen != null) {
             currentScreen.dispose();
         }
+        rpgGame.setScreen(loadingScreen);
         switch (type) {
             case MENU:
-                rpgGame.setScreen(loadingScreen);
                 targetScreen = menuScreen;
                 Assets.getInstance().loadAssets(ScreenType.MENU);
                 break;
             case GAME:
-                rpgGame.setScreen(loadingScreen);
                 targetScreen = gameScreen;
                 Assets.getInstance().loadAssets(ScreenType.GAME);
+                break;
+            case SHOP:
+                targetScreen = shopScreen;
+                Assets.getInstance().loadAssets(ScreenType.SHOP);
                 break;
         }
     }
 
     public void goToTarget() {
         rpgGame.setScreen(targetScreen);
+        targetScreen = null;
     }
 
     public void dispose() {

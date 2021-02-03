@@ -2,31 +2,34 @@ package com.game.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Vector2;
+import com.game.game.Screens.GameScreen;
 
-public class Hero extends BaseUnit {
-    private int coins;
+import java.io.Serializable;
+
+public class Hero extends BaseUnit implements Serializable {
     private int lifes;
+    private int coins;
     private int score;
+    private StringBuilder guiStringHelper;
 
     public void addCoins(int amount) {
         coins += amount;
     }
 
-    public Hero(GameScreen gameScreen, Map map, TextureRegion original, float x, float y) {
-        super(gameScreen, map, original, 100, 360.0f, 0.4f, x, y, 100, 100);
+    public void addScore(int amount) {
+        score += amount;
+    }
+
+    public Hero(GameScreen gameScreen, Map map, float x, float y) {
+        super(gameScreen, map, 100, 360.0f, 0.4f, x, y, 100, 100);
         this.coins = 0;
         this.lifes = 5;
         this.score = 0;
-    }
-
-    public void addScore(int amount){
-        score += amount;
+        this.guiStringHelper = new StringBuilder(150);
+        this.type = Type.Knight;
+        this.afterLoad(gameScreen);
     }
 
     @Override
@@ -53,6 +56,8 @@ public class Hero extends BaseUnit {
     }
 
     public void renderGUI(SpriteBatch batch, BitmapFont font) {
-        font.draw(batch, "Score " + score +  "\nHP: " + hp + " / " + maxHp + " x" + lifes + "\nCoins: " + coins, 20, 700);
+        guiStringHelper.setLength(0);
+        guiStringHelper.append("SCORE: ").append(score).append("\nHP: ").append(hp).append(" / ").append(maxHp).append(" x").append(lifes).append("\nCoins: ").append(coins);
+        font.draw(batch, guiStringHelper, 20, 700);
     }
 }
